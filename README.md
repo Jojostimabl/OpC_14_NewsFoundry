@@ -2,7 +2,7 @@
 
 Application de revue de presse assistée par IA, réalisée à partir du [starter officiel OpenClassrooms](https://github.com/OpenClassrooms-Student-Center/P14DevIA).
 
-**État actuel :** le socle de développement fonctionne : frontend Next.js, API FastAPI, connexion PostgreSQL, initialisation du compte de démonstration et commandes de démarrage/arrêt. La connexion utilisateur, le chat, les recherches d’actualités et la génération de revues seront ajoutés ensuite. La page d’accueil est une page d’attente.
+**État actuel :** le socle local et la plateforme Vercel/Railway fonctionnent. La connexion e-mail/mot de passe, la session JWT, l’accueil authentifié et la déconnexion sont disponibles. Les discussions, les recherches d’actualités et la génération de revues viendront aux étapes suivantes.
 
 ## Stack
 
@@ -65,7 +65,7 @@ Depuis la racine du projet :
 | Vérification frontend → API → DB | http://127.0.0.1:3014/api/health |
 | PostgreSQL | `127.0.0.1:55414`, base `newsfoundry` |
 
-La création des tables et du compte `test@test.com` / `test` est idempotente. Son mot de passe est haché. La route de connexion n’est pas encore implémentée.
+La création des tables et du compte de démonstration `test@test.com` / `test` est idempotente. Son mot de passe est haché avec bcrypt.
 
 ## Lancement manuel
 
@@ -108,13 +108,27 @@ Le service écoute sur le même port **55414** : choisir le mode npm ou Docker e
 |---|---|---|
 | `backend/.env` | `DATABASE_URL` | Connexion PostgreSQL |
 | | `CORS_ORIGINS` | Origines du frontend autorisées, séparées par des virgules |
-| | `JWT_SECRET` | Secret privé préparé pour la future authentification |
+| | `JWT_SECRET` | Clé privée de signature JWT, au moins 32 caractères |
+| | `JWT_ACCESS_TOKEN_MINUTES` | Durée de session en minutes, 30 par défaut |
 | | `LLM_MODEL` | Modèle à configurer avec les fonctionnalités IA |
 | | `OPENROUTER_API_KEY` | Clé fournisseur facultative à ce stade |
 | | `WORLD_NEWS_API_KEY` | Clé d’actualités à renseigner ultérieurement |
 | `frontend/.env.local` | `NEXT_PUBLIC_API_URL` | URL publique du backend, sans secret |
 
 Les exemples sont publiés ; les valeurs privées, bases de données, caches et dépendances installées restent locales.
+
+## Authentification
+
+Ouvrir l’application puis se connecter avec **`test@test.com` / `test`**. Aucune inscription n’est proposée. Un rechargement conserve la session ; **Se déconnecter** efface le token du navigateur, y compris dans les autres onglets.
+
+- `POST /login` : corps JSON `{"email":"test@test.com","password":"test"}`. Réponse : `access_token`, `token_type`, `expires_in`, `expires_at` et `user`.
+- `GET /me` : exige `Authorization: Bearer <token>` ; renvoie uniquement l’identifiant et l’e-mail.
+- Les réponses privées ne sont pas mises en cache. Identifiants incorrects ou token absent, falsifié ou expiré : HTTP 401. Données invalides : 422. Service indisponible : 503.
+- Les routes Next.js `/api/auth/login` et `/api/auth/me` transmettent les appels au backend. Le navigateur reste sur l’origine du frontend ; cela permet aussi la connexion dans les aperçus Vercel.
+
+Conformément à la consigne pédagogique, seul le JWT est conservé dans le local storage, sous `newsfoundry.access_token` ; aucun mot de passe n’y est enregistré. Le navigateur surveille son expiration et l’API valide sa signature HS256, son émetteur, son destinataire, son expiration et l’existence de l’utilisateur. Le décodage côté navigateur sert uniquement à l’expérience utilisateur. La déconnexion supprime la copie locale : le token reste techniquement valide jusqu’à son expiration, sans mécanisme de révocation à cette étape. Le local storage reste accessible au JavaScript de la page ; une application hors de ce cadre pourrait préférer une session en cookie HttpOnly.
+
+La dépendance backend `CurrentUser` doit être utilisée pour chaque future route métier privée. Le filtrage des discussions par propriétaire sera ajouté avec les discussions, à l’étape suivante.
 
 ## Structure
 

@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     )
     database_url: str = Field(validation_alias="DATABASE_URL")
     cors_origins: str = "http://127.0.0.1:3014,http://localhost:3014"
-    jwt_secret: str = ""
+    jwt_secret: str = Field(min_length=32)
+    jwt_access_token_minutes: int = Field(default=30, ge=1, le=1440)
     llm_model: str = ""
     openrouter_api_key: str = ""
     world_news_api_key: str = ""

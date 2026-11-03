@@ -8,6 +8,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
 
+from src.auth import router as auth_router
 from src.config import get_settings
 from src.database import get_engine, init_db
 
@@ -19,7 +20,8 @@ async def lifespan(_app: FastAPI):
     get_engine().dispose()
 
 
-app = FastAPI(title="NewsFoundry API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="NewsFoundry API", version="0.2.0", lifespan=lifespan)
+app.include_router(auth_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_settings().allowed_origins,
