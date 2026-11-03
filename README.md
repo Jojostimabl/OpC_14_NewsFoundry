@@ -168,7 +168,7 @@ Le contexte Docker est **backend/**. L’image respecte la variable `PORT` de l�
 
 Le frontend est relié au projet Vercel `opc-14-newsfoundry`, avec `frontend/` comme dossier racine, Node 24, `npm ci` et `npm run build`. Chaque push sur `main` déclenche un déploiement de production ; les autres branches et pull requests produisent des aperçus.
 
-Le backend est déployé sur Railway depuis `backend/` avec le Dockerfile, un contrôle de disponibilité `/health` et des redémarrages sur échec. Le service suit `main` et surveille `/backend/**` pour les déploiements automatiques. La base PostgreSQL de production (version 18) utilise un volume persistant et le réseau privé Railway ; elle est distincte de PostgreSQL 17 en local.
+Le backend est déployé sur Railway depuis `backend/` avec le Dockerfile, un contrôle de disponibilité `/health` et des redémarrages sur échec. Le service pointe vers `main` et surveille `/backend/**`. L’autodéploiement backend nécessite d’autoriser l’application GitHub Railway sur ce dépôt puis d’activer le déclencheur `main` ; cette autorisation reste à finaliser. Le backend actuel a été déployé manuellement depuis le dépôt public. La base PostgreSQL de production (version 18) utilise un volume persistant et le réseau privé Railway ; elle est distincte de PostgreSQL 17 en local.
 
 | Service de production | Adresse |
 |---|---|
