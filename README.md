@@ -16,7 +16,7 @@ Application de revue de presse assistée par IA, réalisée à partir du [starte
 
 ## Prérequis
 
-- **Node.js 24.11.1**, version utilisée pour les vérifications. Le frontend exige au minimum Node 22.19.
+- **Node.js 24.11.1**, version utilisée pour les vérifications. Le frontend utilise Node 24 en local et sur Vercel.
 - **uv**, avec Python **3.13.5** disponible ou installable par uv.
 - **Windows / PowerShell** pour les commandes automatiques ci-dessous. Un démarrage manuel est décrit plus bas pour les autres systèmes.
 - Docker est **optionnel en local** : le projet fournit aussi PostgreSQL 17 via une dépendance npm.
@@ -152,7 +152,9 @@ docker build -t newsfoundry-backend ./backend
 
 Le contexte Docker est **backend/**. L’image respecte la variable `PORT` de l’hébergeur, avec 8000 par défaut. La construction locale nécessite un moteur Docker actif.
 
-Le futur déploiement utilisera `frontend/` comme racine sur Vercel et `backend/` sur Railway. Les URLs de production ne sont pas encore configurées. En production, fournir les variables privées et les origines CORS correspondantes.
+Le frontend est relié au projet Vercel `opc-14-newsfoundry`, avec `frontend/` comme dossier racine, Node 24, `npm ci` et `npm run build`. Chaque push sur `main` déclenche un déploiement de production ; les autres branches et pull requests produisent des aperçus.
+
+Le backend sera déployé séparément sur Railway depuis `backend/`. Une fois son URL publique disponible, renseigner `NEXT_PUBLIC_API_URL` dans les environnements Vercel concernés et redéployer le frontend. Configurer les secrets du backend et ses origines CORS pour autoriser le frontend déployé. La route `/api/health` restera indisponible tant que le backend ne sera pas connecté.
 
 ## Dépannage rapide
 
