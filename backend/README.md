@@ -1,25 +1,19 @@
-# NewsFoundry Backend
+# NewsFoundry — backend
 
-1. Copier le fichier `.env.example` dans `.env`
+API Python 3.13.5 / FastAPI, modèles SQLModel et connexion PostgreSQL 17.
+Les dépendances sont verrouillées dans `uv.lock`.
 
+Voir le [README principal](../README.md) pour l’installation, les variables, le démarrage et le déploiement.
 
-2. Installer les dépendances:
-```bash
-uv sync
+Depuis ce dossier, après création de `.env` et démarrage de PostgreSQL :
+
+```powershell
+uv sync --locked --no-dev
+uv run --locked --no-dev uvicorn src.main:app --host 127.0.0.1 --port 8014 --reload --reload-dir src
 ```
 
-2. Démarrer la base de données:
-```bash
-docker run \
-  --name newsfoundry_db \
-  -e POSTGRES_USER=user \
-  -e POSTGRES_PASSWORD=password \
-  -e POSTGRES_DB=newsfoundry \
-  -p 5432:5432 \
-  postgres:17
-```
+Routes du socle : `/`, `/health`, `/docs`. Le compte de démonstration est initialisé au démarrage ;
+les routes de connexion, de chat et de génération seront développées ultérieurement.
 
-3. Lancer le backend:
-```bash
-uv run --env-file .env src/main.py
-```
+Le Dockerfile attend ce dossier comme contexte de construction. Il utilise le port `PORT` de
+l’hébergeur, avec 8000 par défaut. Les clés et les paramètres de la base restent dans l’environnement.

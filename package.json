@@ -1,0 +1,16 @@
+{
+  "name": "opc-14-newsfoundry",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db:local": "node --env-file=backend/.env scripts/local-postgres.mjs",
+    "db:docker": "docker compose up -d --wait",
+    "db:docker:stop": "docker compose down",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "build:frontend": "npm --prefix frontend run build"
+  },
+  "devDependencies": {
+    "embedded-postgres": "17.11.0-beta.19"
+  }
+}

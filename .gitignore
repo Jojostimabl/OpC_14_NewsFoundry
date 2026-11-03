@@ -1,12 +1,52 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/.pytest_cache/
+**/.ruff_cache/
+**/build/
+**/dist/
+**/*.egg-info/
+# Node and generated files
+**/node_modules/
+**/.next/
+**/out/
+**/coverage/
+**/*.tsbuildinfo
+**/next-env.d.ts
+# Private local configuration
+**/.env
+**/.env.*
+!**/.env.example
+.npm-cache/
+.uv-cache/
+.local-postgres/
+.logs/
+.test-temp/
+docs/sources/fiche_page_*.png
+.DS_Store
+Thumbs.db
 
-# Virtual environments
-.venv
-
-.env
+# Working documents, course material and agent instructions stay local
+/docs/
+**/AGENTS.md
+**/CLAUDE.md
+/frontend/README.md
+.local/
+# Tests and CI are kept locally at the author's request
+.github/
+**/tests/
+**/__tests__/
+**/test_*.py
+**/*_test.py
+**/conftest.py
+**/*.test.*
+**/*.spec.*
+**/playwright-report/
+**/test-results/
+# Unused template images stay local
+/frontend/public/file.svg
+/frontend/public/globe.svg
+/frontend/public/next.svg
+/frontend/public/vercel.svg
+/frontend/public/window.svg

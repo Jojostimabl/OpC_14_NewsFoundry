@@ -1,31 +1,33 @@
-import os
-from models import User
-from sqlmodel import SQLModel, Session, create_engine, select
+"""Base dédiée et création idempotente du compte de démonstration."""
+
+from functools import lru_cache
+
 import bcrypt
+from sqlalchemy.engine import make_url
+from sqlmodel import Session, SQLModel, create_engine, select
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-engine = create_engine(DATABASE_URL, echo=True)
+from src.config import get_settings
+from src.models import User
 
 
-def init_db():
+@lru_cache
+def get_engine():
+    url = make_url(get_settings().database_url)
+    if url.drivername == "postgresql":
+        url = url.set(drivername="postgresql+psycopg2")
+    return create_engine(url, echo=False, pool_pre_ping=True)
+
+
+def init_db() -> None:
+    engine = get_engine()
     SQLModel.metadata.create_all(engine)
-    print("Database initialized successfully")
-
-    # Creating a default user
-    default_email = "test@test.com"
-    default_password = "test"
-
     with Session(engine) as session:
-        statement = select(User).where(User.email == default_email)
-        user = session.exec(statement).first()
-
-        if not user:
+        user = session.exec(select(User).where(User.email == "test@test.com")).first()
+        if user is None:
             session.add(
                 User(
-                    email=default_email,
-                    hashed_password=bcrypt.hashpw(
-                        default_password.encode("utf-8"), bcrypt.gensalt()
-                    ),
+                    email="test@test.com",
+                    hashed_password=bcrypt.hashpw(b"test", bcrypt.gensalt()).decode(),
                 )
             )
             session.commit()
