@@ -154,7 +154,16 @@ Le contexte Docker est **backend/**. L’image respecte la variable `PORT` de l�
 
 Le frontend est relié au projet Vercel `opc-14-newsfoundry`, avec `frontend/` comme dossier racine, Node 24, `npm ci` et `npm run build`. Chaque push sur `main` déclenche un déploiement de production ; les autres branches et pull requests produisent des aperçus.
 
-Le backend sera déployé séparément sur Railway depuis `backend/`. Une fois son URL publique disponible, renseigner `NEXT_PUBLIC_API_URL` dans les environnements Vercel concernés et redéployer le frontend. Configurer les secrets du backend et ses origines CORS pour autoriser le frontend déployé. La route `/api/health` restera indisponible tant que le backend ne sera pas connecté.
+Le backend est déployé sur Railway depuis `backend/` avec le Dockerfile, un contrôle de disponibilité `/health` et des redémarrages sur échec. Le service suit `main` et surveille `/backend/**` pour les déploiements automatiques. La base PostgreSQL de production (version 18) utilise un volume persistant et le réseau privé Railway ; elle est distincte de PostgreSQL 17 en local.
+
+| Service de production | Adresse |
+|---|---|
+| Frontend Vercel | https://opc-14-newsfoundry.vercel.app |
+| API Railway | https://backend-production-d63f.up.railway.app |
+| Documentation API | https://backend-production-d63f.up.railway.app/docs |
+| Vérification frontend → API → DB | https://opc-14-newsfoundry.vercel.app/api/health |
+
+`NEXT_PUBLIC_API_URL` est configurée dans Vercel pour la production et les aperçus. Cette URL est publique ; les secrets et la référence `DATABASE_URL` vers PostgreSQL restent sur Railway. `CORS_ORIGINS` autorise les domaines de production Vercel. Pour appeler directement l’API depuis le navigateur sur une URL d’aperçu supplémentaire, ajouter son origine exacte à cette liste. Toute modification d’une variable Vercel nécessite un nouveau déploiement pour être appliquée.
 
 ## Dépannage rapide
 
